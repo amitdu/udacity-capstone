@@ -30,12 +30,12 @@ pipeline {
         }
         stage('Push Image to ECR'){
             steps {
-                sh './infra/scripts/docker_upload.sh ${BUILD_NUMBER} ${ECR_PASSWD}'
+                sh 'sudo ./infra/scripts/docker_upload.sh ${BUILD_NUMBER} ${ECR_PASSWD}'
             }
         }
         stage('Deploy Latest Image'){
             steps {
-                sh './infra/scripts/deploy.sh ${BUILD_NUMBER}'
+                sh 'sudo ./infra/scripts/deploy.sh ${BUILD_NUMBER}'
             }
         }
         
