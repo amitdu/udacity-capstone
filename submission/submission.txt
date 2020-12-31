@@ -1,0 +1,26 @@
+#1. Project source code is here
+https://github.com/amitdu/udacity-capstone.git
+
+#2. Docker image is stored in ECR Private repositry. 
+ECR_REGISTRY.png
+ECR_REGISTRY_PUSHED.png
+
+3. Linting is Implemented for Dockerfile. Build step in Jenkinsfile
+nest-app/Jenkinsfile
+LINTING_FAILED.png
+LINTING_PASSED.png
+
+4. Docker build is implemented in Jenkins Pipeline via infra/scripts/docker_build.sh
+nest-app/Dockerfile
+nest-app/Jenkinsfile
+infra/scripts/docker_build.sh
+
+5. EKS Cluster is deployed via CloudFormation
+infra/cloudformation
+infra/scripts/create-stack.sh
+infra/scripts/delete-stack.sh
+
+6. Rolling update is used
+infra/k8/app.yaml
+
+

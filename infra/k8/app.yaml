@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nest-app-prod
+  labels:
+    environment: production
+    app: nest-app-prod
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 50%
+  selector:
+    matchLabels:
+      app: nest-app-prod
+  template:
+    metadata:
+      labels:
+        app: nest-app-prod
+    spec:
+      nodeSelector:
+        app: "cloudv2-prod1"
+      containers:
+        - name: nest-app-prod
+          image: 082530245822.dkr.ecr.us-east-2.amazonaws.com/nest-app:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 250m
+              memory: 900Mi
+            requests:
+              cpu: 250m
+              memory: 900Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: 3000
+            initialDelaySeconds: 3
+            periodSeconds: 3

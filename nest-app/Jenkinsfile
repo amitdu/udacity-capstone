@@ -1,0 +1,65 @@
+pipeline {
+    environment{
+        BUILD_NUMBER = "$BUILD_NUMBER"
+        ECR_PASSWD = "$ECR_PASSWD"
+    }
+    agent any
+    stages {
+        stage('Lint Dockerfile'){
+            steps {
+                sh 'cd nest-app && hadolint Dockerfile'
+            }
+        }
+        stage('Test nest-app'){
+            steps {
+                sh 'cd nest-app && npm ci --production=false'
+                sh 'cd nest-app && npm run test'
+            }
+        }
+        stage('Scan the app for vulnerability'){
+            steps {
+                sh 'cd nest-app && npm audit --audit-level=critical'
+            }
+        }
+        stage('Docker Build'){
+            steps {
+                sh 'echo ${BUILD_NUMBER}'
+                sh 'chmod +x ./infra/scripts/*'
+                sh './infra/scripts/docker_build.sh ${BUILD_NUMBER}'
+            }
+        }
+        stage('Push Image to ECR'){
+            steps {
+                sh './infra/scripts/docker_upload.sh ${BUILD_NUMBER} ${ECR_PASSWD}'
+            }
+        }
+        stage('Deploy Latest Image'){
+            steps {
+                sh './infra/scripts/deploy.sh ${BUILD_NUMBER}'
+            }
+        }
+        
+    }
+    post {
+        always {
+             echo 'Sending Mail...'
+             emailext body: ''' Hi, Please Find the deployemnt status /n $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS! Check console output at $BUILD_URL to view the results.''', 
+             recipientProviders: [developers()], 
+             subject: 'Jenkins Deployment Alert : Nest APP  | $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!', 
+             to: 'edx.amit@gmail.com, amitk@codecron.com'
+            
+        }
+        success {
+            echo 'This will run only if successful'
+        }
+        failure {
+            echo 'This will run only if failed'
+        }
+        unstable {
+            echo 'This will run only if the run was marked as unstable'
+        }
+        changed {
+            echo 'This will run only if the state of the Pipeline has changed'
+        }
+    }
+}
