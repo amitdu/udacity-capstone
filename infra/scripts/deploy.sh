@@ -10,6 +10,6 @@ template=`cat ${DEPLOYMENT_PATH} | sed "s/latest/v$1/g"`
 echo "$template" | kubectl apply -f -
 echo "<<<<<<< Deployment started... >>>>>>"
 kubectl get pods
-sleep 10
+sleep 40
 echo "<<<<<<< 10s later >>>>>>"
 kubectl get pods
