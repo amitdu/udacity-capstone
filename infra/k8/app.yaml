@@ -6,12 +6,12 @@ metadata:
     environment: production
     app: nest-app-prod
 spec:
-  replicas: 2
+  replicas: 4
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 50%
+      maxUnavailable: 25%
   selector:
     matchLabels:
       app: nest-app-prod
